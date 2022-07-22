@@ -26,12 +26,12 @@ namespace Test
 
         public void ToggleScene(int sceneIndex)
         {
-            SetManager.Instance.ToggleScene(sceneIndex);
+            //SetManager.Instance.ToggleScene(sceneIndex);
         }
 
         public void ReloadScenesButton()
         {
-            SetManager.Instance.ReloadScenesButton();
+            //SetManager.Instance.ReloadScenesButton();
         }
 
         private void FixedUpdate()

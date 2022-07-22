@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace Test
 {
-    public class SetManager : SimulationBehaviour
+    public class SetManager : MonoBehaviour
     {
         public static SetManager Instance => _instance;
         private static SetManager _instance;
@@ -71,18 +71,18 @@ namespace Test
             OnSceneChanged?.Invoke(CurrentScene);
         }
 
-        public void ToggleScene(int sceneIndex)
-        {
-            if (!Runner.SceneManager().LoadedScenes.Contains(sceneIndex))
-                Runner.SceneManager().AddScene(sceneIndex);
-            else
-                Runner.SceneManager().RemoveScene(sceneIndex);
-        }
+        //public void ToggleScene(int sceneIndex)
+        //{
+        //    if (!Runner.SceneManager().LoadedScenes.Contains(sceneIndex))
+        //        Runner.SceneManager().AddScene(sceneIndex);
+        //    else
+        //        Runner.SceneManager().RemoveScene(sceneIndex);
+        //}
 
-        public void ReloadScenesButton()
-        {
-            if (Runner.SceneManager() && Runner.IsServer)
-                Runner.SceneManager().StartReloadScenes();
-        }
+        //public void ReloadScenesButton()
+        //{
+        //    if (Runner.SceneManager() && Runner.IsServer)
+        //        Runner.SceneManager().StartReloadScenes();
+        //}
     }
 }

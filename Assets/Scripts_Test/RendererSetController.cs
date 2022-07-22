@@ -9,10 +9,13 @@ namespace Test
     public class RendererSetController : MonoBehaviour
     {
         private Renderer[] _renderers;
-        private uint[] _renderersLM;
+        private uint[] _renderersValues;
 
         private Light[] _light;
-        private int[] _lightLM;
+        private int[] _lightValues;
+
+        private AudioSource[] _audioSources;
+        private bool[] _audioSourcesValues;
 
         private string _currentSceneName;
 
@@ -29,10 +32,13 @@ namespace Test
         private void Start()
         {
             _renderers = GetComponentsInChildren<Renderer>();
-            _renderersLM = _renderers.Select(o => o.renderingLayerMask).ToArray();
+            _renderersValues = _renderers.Select(o => o.renderingLayerMask).ToArray();
 
             _light = GetComponentsInChildren<Light>();
-            _lightLM = _light.Select(o => o.cullingMask).ToArray();
+            _lightValues = _light.Select(o => o.cullingMask).ToArray();
+
+            _audioSources = GetComponentsInChildren<AudioSource>();
+            _audioSourcesValues = _audioSources.Select(o => o.mute).ToArray();
 
             _currentSceneName = SetManager.CurrentScene.name;
         }
@@ -42,10 +48,13 @@ namespace Test
             var active = _currentSceneName == scene.name;
 
             for (int i = 0; i < _renderers.Length; i++)
-                _renderers[i].renderingLayerMask = active ? _renderersLM[i] : 0;
+                _renderers[i].renderingLayerMask = active ? _renderersValues[i] : 0;
 
             for (int i = 0; i < _light.Length; i++)
-                _light[i].cullingMask = active ? _lightLM[i] : 0;
+                _light[i].cullingMask = active ? _lightValues[i] : 0;
+
+            for (int i = 0; i < _audioSources.Length; i++)
+                _audioSources[i].mute = active ? _audioSourcesValues[i] : true;
         }
     }
 }
