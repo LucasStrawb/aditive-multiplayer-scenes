@@ -42,7 +42,7 @@ namespace Test
             {
                 runner.Spawn(NetworkSceneManager, onBeforeSpawned: ((networkRunner, o) => o.GetBehaviour<CustomNetworkSceneManager>().ClientSceneManagement = Menu.AllowClientSideManagement));
                 runner.AddSimulationBehaviour(ChangeSceneHandler);
-                //runner.AddSimulationBehaviour(SetManager);
+                runner.AddSimulationBehaviour(SetManager);
                 SetupGamemodeText(runner);
             }
 
