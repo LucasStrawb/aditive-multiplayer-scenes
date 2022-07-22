@@ -10,13 +10,12 @@ namespace Test
 {
     public class Launcher : MonoBehaviour
     {
-        public NetworkPrefabRef NetworkSceneManager;
-        public SimulationBehaviour ChangeSceneHandler;
-        public SetManager SetManager;
-        public Text GamemodeText;
-        private static NetworkRunner _runner;
+        public static Action<GameMode> OnCurrentGameModeChanged;
 
-        public Button ExitButton;
+        [SerializeField] private NetworkPrefabRef _networkSceneManagerPrefab;
+
+        public static NetworkRunner Runner => _runner;
+        private static NetworkRunner _runner;
 
         private void Awake()
         {
@@ -31,35 +30,23 @@ namespace Test
             _runner.ProvideInput = true;
             _runner.StartGame(new StartGameArgs()
             {
-                SessionName = Menu.SessionName,
+                SessionName = "Test",
                 GameMode = GameMode.AutoHostOrClient,
                 SceneManager = gameObject.AddComponent<CustomSceneLoader>(),
                 Initialized = SpawnNetworkSceneManager
-            }
-            );
+            });
 
             void SpawnNetworkSceneManager(NetworkRunner runner)
             {
-                runner.Spawn(NetworkSceneManager, onBeforeSpawned: ((networkRunner, o) => o.GetBehaviour<CustomNetworkSceneManager>().ClientSceneManagement = Menu.AllowClientSideManagement));
-                runner.AddSimulationBehaviour(ChangeSceneHandler);
-                runner.AddSimulationBehaviour(SetManager);
-                SetupGamemodeText(runner);
+                runner.Spawn(_networkSceneManagerPrefab);
+                OnCurrentGameModeChanged?.Invoke(runner.GameMode);
             }
-
-            ExitButton.onClick.AddListener(BackToMenu);
         }
 
-        private void SetupGamemodeText(NetworkRunner runner)
+        public static void ShutDown()
         {
-            GamemodeText.gameObject.SetActive(true);
-            GamemodeText.text = runner.GameMode.ToString();
-        }
-
-        public void BackToMenu()
-        {
-            if (_runner)
+            if (_runner != null)
                 _runner.Shutdown();
-            SceneManager.LoadScene("Login");
         }
     }
 }

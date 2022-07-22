@@ -40,12 +40,12 @@ namespace Test
             _audioSources = GetComponentsInChildren<AudioSource>();
             _audioSourcesValues = _audioSources.Select(o => o.mute).ToArray();
 
-            _currentSceneName = SetManager.CurrentScene.name;
+            _currentSceneName = SetManager.CurrentSceneName;
         }
 
-        private void OnSceneChanged(Scene scene)
+        private void OnSceneChanged(string sceneName)
         {
-            var active = _currentSceneName == scene.name;
+            var active = _currentSceneName == sceneName;
 
             for (int i = 0; i < _renderers.Length; i++)
                 _renderers[i].renderingLayerMask = active ? _renderersValues[i] : 0;

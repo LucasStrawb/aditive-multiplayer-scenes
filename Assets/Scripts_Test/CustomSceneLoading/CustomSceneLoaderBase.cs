@@ -16,7 +16,6 @@ namespace Test
 
         public bool ShowHierarchyWindowOverlay = true;
 
-
         private Task _switchSceneTask;
         private bool _currentSceneOutdated;
         protected SceneRef _currentScene;

@@ -12,6 +12,8 @@ namespace Test
     {
         private SceneRef _desiredScene;
 
+        public static Action<int> OnSceneLoaded;
+
         protected override bool IsScenesUpdated()
         {
             if (Runner.SceneManager() && Runner.SceneManager().Object)
@@ -49,14 +51,22 @@ namespace Test
         {
             var scene = new Scene();
             var param = new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.Physics3D);
-            var op = await SceneManager.LoadSceneAsync(sceneIndex, param);
+            Debug.Log($"Loading scene - Set {sceneIndex}");
+            var op = await SceneManager.LoadSceneAsync($"Set {sceneIndex}", param);
             op.completed += (operation) =>
             {
                 scene = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
+                OnSceneLoaded?.Invoke(sceneIndex);
             };
-            //var param = new CreateSceneParameters(LocalPhysicsMode.Physics3D);
-            //var scene = SceneManager.CreateScene($"New Scene ({sceneIndex})", param);
             return scene;
         }
+
+        //private async Task<Scene> LoadSceneAsset(int sceneIndex)
+        //{
+        //    Debug.Log($"Creating scene - Set {sceneIndex}");
+        //    var param = new CreateSceneParameters(LocalPhysicsMode.Physics3D);
+        //    var scene = SceneManager.CreateScene($"Set {sceneIndex}", param);
+        //    return scene;
+        //}
     }
 }

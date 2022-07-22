@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3634229830094042688}
   - component: {fileID: 3634229830094042695}
   m_Layer: 0
-  m_Name: NetworkSceneManager 1
+  m_Name: NetworkSceneManager_Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
