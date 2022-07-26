@@ -10,15 +10,17 @@ using Object = System.Object;
 
 namespace Test
 {
-    public abstract class CustomSceneLoaderBase : Fusion.Behaviour, INetworkSceneManager
+    public class MyCustomSceneLoader : Fusion.Behaviour, INetworkSceneManager
     {
-        private static readonly WeakReference<CustomSceneLoaderBase> s_currentlyLoading = new(null);
+        private static readonly WeakReference<MyCustomSceneLoader> s_currentlyLoading = new(null);
 
         private Task _switchSceneTask;
         private bool _currentSceneOutdated;
         protected SceneRef _currentScene;
 
         public NetworkRunner Runner { get; private set; }
+
+        private int _desiredScene;
 
         protected virtual void LateUpdate()
         {
@@ -49,17 +51,14 @@ namespace Test
                 }
                 else
                 {
-                    LogTrace($"Waiting for {target} to finish loading");
                     return;
                 }
             }
 
-            var prevScene = _currentScene;
-            _currentScene = GetDesiredSceneToLoad();
+            _currentScene = _desiredScene;
             _currentSceneOutdated = false;
 
-            LogTrace($"Scene transition {prevScene}->{_currentScene}");
-            _switchSceneTask = SwitchSceneWrapper(prevScene, _currentScene);
+            _switchSceneTask = SwitchSceneWrapper(_currentScene);
         }
 
         protected static bool IsScenePathOrNameEqual(Scene scene, string nameOrPath)
@@ -137,8 +136,17 @@ namespace Test
             return result;
         }
 
-        protected abstract bool IsScenesUpdated();
-        protected abstract SceneRef GetDesiredSceneToLoad();
+        protected bool IsScenesUpdated()
+        {
+            if (Runner.SceneManager() && Runner.SceneManager().Object)
+            {
+                Runner.SceneManager().UnloadOutdatedScenes();
+
+                return Runner.SceneManager().IsSceneUpdated(out _desiredScene);
+            }
+
+            return true;
+        }
 
         #region INetworkSceneObjectProvider
 
@@ -184,7 +192,6 @@ namespace Test
                 // ongoing loading, dispose
                 if (_switchSceneTask != null && _switchSceneTask.Status == TaskStatus.Running)
                 {
-                    LogWarn($"There is an ongoing scene load ({_currentScene}), stopping and disposing coroutine.");
                     (_switchSceneTask as IDisposable)?.Dispose();
                 }
             }
@@ -197,25 +204,32 @@ namespace Test
             }
         }
 
-        protected abstract Task<IEnumerable<NetworkObject>> SwitchScene(SceneRef prevScene, SceneRef newScene);
-
-        [System.Diagnostics.Conditional("FUSION_NETWORK_SCENE_MANAGER_TRACE")]
-        protected void LogTrace(string msg)
+        protected async Task<IEnumerable<NetworkObject>> SwitchScene(int index)
         {
-            Log.Debug($"[NetworkSceneManager] {(this != null ? this.name : "<destroyed>")}: {msg}");
+            var sceneObjects = new List<NetworkObject>();
+            if (index >= 0)
+            {
+                var loadedScene = await LoadSceneAsset(index);
+                sceneObjects = FindNetworkObjects(loadedScene, disable: false);
+            }
+            return sceneObjects;
         }
 
-        protected void LogError(string msg)
+        private async Task<Scene> LoadSceneAsset(int index)
         {
-            Log.Error($"[NetworkSceneManager] {(this != null ? this.name : "<destroyed>")}: {msg}");
+            var scene = new Scene();
+            var param = new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.Physics3D);
+
+            var op = await SceneManager.LoadSceneAsync(Runner.SceneManager().SceneName, param);
+            op.completed += (operation) =>
+            {
+                scene = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
+                Runner.SceneManager().OnSceneLoaded?.Invoke(index, scene);
+            };
+            return scene;
         }
 
-        protected void LogWarn(string msg)
-        {
-            Log.Warn($"[NetworkSceneManager] {(this != null ? this.name : "<destroyed>")}: {msg}");
-        }
-
-        private async Task SwitchSceneWrapper(SceneRef prevScene, SceneRef newScene)
+        private async Task SwitchSceneWrapper(int newScene)
         {
             IEnumerable<NetworkObject> sceneObjects;
             Exception error = null;
@@ -225,7 +239,7 @@ namespace Test
                 Assert.Check(!s_currentlyLoading.TryGetTarget(out _));
                 s_currentlyLoading.SetTarget(this);
                 Runner.InvokeSceneLoadStart();
-                sceneObjects = await SwitchScene(prevScene, newScene);
+                sceneObjects = await SwitchScene(newScene);
             }
             catch (Exception ex)
             {
@@ -237,12 +251,10 @@ namespace Test
                 Assert.Check(s_currentlyLoading.TryGetTarget(out var target) && target == this);
                 s_currentlyLoading.SetTarget(null);
                 _switchSceneTask = null;
-                LogTrace($"Coroutine finished for {newScene}");
             }
 
             if (error != null)
             {
-                LogError($"Failed to switch scenes: {error}");
             }
             else
             {

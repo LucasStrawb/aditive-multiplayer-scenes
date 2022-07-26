@@ -11,12 +11,10 @@ namespace Test
 {
     public class CustomNetworkSceneManager : NetworkBehaviour
     {
-        [Networked, Capacity(64)] public NetworkLinkedList<SceneRef> CurrentScenes => default;
-        public List<SceneRef> InterestedInScenes = new();
-        public List<SceneRef> LoadedScenes = new();
+        [Networked, Capacity(64)] public NetworkLinkedList<int> CurrentScenes => default;
+        public List<int> InterestedInScenes = new();
+        public List<int> LoadedScenes = new();
         public Action OnUpToDate;
-
-        private Dictionary<SceneRef, int> Ref = new();
 
         public override void Spawned()
         {
@@ -26,16 +24,11 @@ namespace Test
                 return;
             }
             DontDestroyOnLoad(this);
-            Runner.SetSceneManager(this);
+            //Runner.SetSceneManager(this);
         }
 
         public void AddScene(int sceneIndex)
         {
-            Debug.Log($"sceneIndex {sceneIndex}\n" +
-                $"CurrentScenes.Count {CurrentScenes.Count}\n" +
-                $"CurrentScenes.Capacity {CurrentScenes.Capacity}\n" +
-                $"CurrentScenes.Contains(sceneIndex) {CurrentScenes.Contains(sceneIndex)}");
-
             if ((Object.HasStateAuthority) && (CurrentScenes.Count >= CurrentScenes.Capacity || CurrentScenes.Contains(sceneIndex) || sceneIndex < 0))
             {
                 Debug.LogError("Scene not added");
@@ -51,15 +44,6 @@ namespace Test
             {
                 InterestedInScenes.Add(sceneIndex);
             }
-
-            if (Ref.ContainsKey(sceneIndex))
-            {
-                Ref[sceneIndex] = sceneIndex;
-            }
-            else
-            {
-                Ref.Add(sceneIndex, sceneIndex);
-            }
         }
 
         public void RemoveScene(int sceneIndex)
@@ -72,24 +56,22 @@ namespace Test
 
         public void ToggleScene(int sceneIndex)
         {
-            if (!Runner.SceneManager().LoadedScenes.Contains(sceneIndex))
-                Runner.SceneManager().AddScene(sceneIndex);
-            else
-                Runner.SceneManager().RemoveScene(sceneIndex);
+            //if (!Runner.SceneManager().LoadedScenes.Contains(sceneIndex))
+            //    Runner.SceneManager().AddScene(sceneIndex);
+            //else
+            //    Runner.SceneManager().RemoveScene(sceneIndex);
         }
 
         public void UnloadOutdatedScenes()
         {
             var _sceneToUnload = LoadedScenes.Except(InterestedInScenes.Intersect(CurrentScenes)).FirstOrDefault();
 
-            if (_sceneToUnload)
-            {
-                var index = Ref[_sceneToUnload];
-                Debug.Log($"Unloading scene - Set {index}");
-
-                SceneManager.UnloadSceneAsync($"Set {index}");
-                LoadedScenes.Remove(_sceneToUnload);
-            }
+            //if (_sceneToUnload)
+            //{
+            //    //SceneManager.UnloadSceneAsync($"Set {index}");
+            //    SceneManager.UnloadSceneAsync(_sceneToUnload);
+            //    LoadedScenes.Remove(_sceneToUnload);
+            //}
         }
 
         public bool IsSceneUpdated(out SceneRef sceneRef)

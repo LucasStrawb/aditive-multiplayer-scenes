@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3634229830094042689}
-  - component: {fileID: 3634229830094042688}
   - component: {fileID: 3634229830094042695}
+  - component: {fileID: 1426647353404070893}
   m_Layer: 0
   m_Name: NetworkSceneManager_Test
   m_TagString: Untagged
@@ -33,25 +33,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3634229830094042688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3634229830094042694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 884b84e4c2bc47e4bb0c99930c0f729f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  _ClientSceneManagement:
-    _value: 0
-  _CurrentScenes: []
-  _ReloadByte: 0
-  InterestedInScenes: []
-  LoadedScenes: []
 --- !u!114 &3634229830094042695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,5 +55,22 @@ MonoBehaviour:
     RawGuidValue: 55f6eb857b8603945bbe8c92e5e8d9f7
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 3634229830094042688}
+  - {fileID: 1426647353404070893}
   SimulationBehaviours: []
+--- !u!114 &1426647353404070893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3634229830094042694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e21df7b71879114ca07974b8b7b5cf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  SceneName: Empty
+  InterestedInScenes: 
+  CurrentScene: 0
+  _CurrentScenes: 

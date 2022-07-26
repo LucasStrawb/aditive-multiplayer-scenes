@@ -26,15 +26,21 @@ namespace Test
         [Button]
         public void SetCurrentScene(int value)
         {
-            _currentScene = value;
-            var scene = SceneManager.GetSceneByName(CurrentSceneName);
-            SceneManager.SetActiveScene(scene);
-            OnSceneChanged?.Invoke(CurrentSceneName);
+            //_currentScene = value;
+            //var scene = SceneManager.GetSceneByName(CurrentSceneName);
+            //StartCoroutine(ChangeScene());
+            //IEnumerator ChangeScene()
+            //{
+            //    Debug.Log("Waiting one second to change scene");
+            //    yield return new WaitForSeconds(1);
+            //    SceneManager.SetActiveScene(scene);
+            //}
+            //OnSceneChanged?.Invoke(CurrentSceneName);
         }
 
         public void ToggleSet(int value)
         {
-            Launcher.Runner.SceneManager().ToggleScene(value);
+            Launcher.Runner.SceneManager().ToggleSet(value);
         }
     }
 }

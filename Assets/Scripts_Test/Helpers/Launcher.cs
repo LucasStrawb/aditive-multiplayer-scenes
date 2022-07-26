@@ -32,7 +32,7 @@ namespace Test
             {
                 SessionName = "Test",
                 GameMode = GameMode.AutoHostOrClient,
-                SceneManager = gameObject.AddComponent<CustomSceneLoader>(),
+                SceneManager = gameObject.AddComponent<MyCustomSceneLoader>(),
                 Initialized = SpawnNetworkSceneManager
             });
 

@@ -7,14 +7,14 @@ namespace Test
 {
     public static class ExtensionHelper
     {
-        private static CustomNetworkSceneManager _sceneManager;
+        private static MyCustomNetworkSceneManager _sceneManager;
 
-        public static CustomNetworkSceneManager SceneManager(this NetworkRunner runner) => _sceneManager;
-        public static void SetSceneManager(this NetworkRunner runner, CustomNetworkSceneManager manager) => _sceneManager = manager;
+        public static MyCustomNetworkSceneManager SceneManager(this NetworkRunner _) => _sceneManager;
+        public static void SetSceneManager(this NetworkRunner _, MyCustomNetworkSceneManager manager) => _sceneManager = manager;
 
         public static TaskAwaiter<AsyncOperation> GetAwaiter(this AsyncOperation op)
         {
-            TaskCompletionSource<AsyncOperation> task = new TaskCompletionSource<AsyncOperation>();
+            var task = new TaskCompletionSource<AsyncOperation>();
             op.completed += (operation) => task.SetResult(op);
             return task.Task.GetAwaiter();
         }

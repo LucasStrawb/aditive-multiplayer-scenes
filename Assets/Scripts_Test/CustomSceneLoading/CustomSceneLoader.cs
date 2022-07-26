@@ -19,9 +19,9 @@ namespace Test
             if (Runner.SceneManager() && Runner.SceneManager().Object)
             {
 
-                Runner.SceneManager().UnloadOutdatedScenes();
+                //Runner.SceneManager().UnloadOutdatedScenes();
 
-                return Runner.SceneManager().IsSceneUpdated(out _desiredScene);
+                //return Runner.SceneManager().IsSceneUpdated(out _desiredScene);
             }
 
             return true;
@@ -47,26 +47,18 @@ namespace Test
             return sceneObjects;
         }
 
-        private async Task<Scene> LoadSceneAsset(int sceneIndex)
+        private async Task<Scene> LoadSceneAsset(SceneRef sceneRef)
         {
             var scene = new Scene();
             var param = new LoadSceneParameters(LoadSceneMode.Additive, LocalPhysicsMode.Physics3D);
-            Debug.Log($"Loading scene - Set {sceneIndex}");
-            var op = await SceneManager.LoadSceneAsync($"Set {sceneIndex}", param);
+
+            var op = await SceneManager.LoadSceneAsync($"Empty", param);
             op.completed += (operation) =>
             {
                 scene = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
-                OnSceneLoaded?.Invoke(sceneIndex);
+                OnSceneLoaded?.Invoke(sceneRef);
             };
             return scene;
         }
-
-        //private async Task<Scene> LoadSceneAsset(int sceneIndex)
-        //{
-        //    Debug.Log($"Creating scene - Set {sceneIndex}");
-        //    var param = new CreateSceneParameters(LocalPhysicsMode.Physics3D);
-        //    var scene = SceneManager.CreateScene($"Set {sceneIndex}", param);
-        //    return scene;
-        //}
     }
 }
