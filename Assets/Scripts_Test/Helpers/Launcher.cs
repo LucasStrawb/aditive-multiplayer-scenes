@@ -28,16 +28,19 @@ namespace Test
             _runner = gameObject.AddComponent<NetworkRunner>();
 
             _runner.ProvideInput = true;
+            Debug.Log("Starting game");
             _runner.StartGame(new StartGameArgs()
             {
                 SessionName = "Test",
                 GameMode = GameMode.AutoHostOrClient,
+                Scene = SceneManager.GetActiveScene().buildIndex,
                 SceneManager = gameObject.AddComponent<CustomSceneLoader>(),
-                Initialized = SpawnNetworkSceneManager
+                Initialized = SpawnNetworkSceneManager,
             });
 
             void SpawnNetworkSceneManager(NetworkRunner runner)
             {
+                Debug.Log("On initiliazed");
                 runner.Spawn(_networkSceneManagerPrefab);
                 OnCurrentGameModeChanged?.Invoke(runner.GameMode);
             }

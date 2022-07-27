@@ -12,8 +12,6 @@ namespace Test
     {
         private SceneRef _desiredScene;
 
-        public static Action<int> OnSceneLoaded;
-
         protected override bool IsScenesUpdated()
         {
             if (Runner.SceneManager() && Runner.SceneManager().Object)
@@ -40,7 +38,7 @@ namespace Test
             {
                 var loadedScene = await LoadSceneAsset(newScene);
                 Debug.Log($"Loaded scene {newScene}: {loadedScene}");
-                sceneObjects = FindNetworkObjects(loadedScene, disable: false);
+                sceneObjects = FindNetworkObjects(loadedScene, disable: true);
             }
 
             Debug.Log($"Switched Scene from {prevScene} to {newScene} - loaded {sceneObjects.Count} scene objects");
@@ -56,17 +54,9 @@ namespace Test
             op.completed += (operation) =>
             {
                 scene = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
-                OnSceneLoaded?.Invoke(sceneIndex);
+                //OnSceneLoaded?.Invoke(sceneIndex);
             };
             return scene;
         }
-
-        //private async Task<Scene> LoadSceneAsset(int sceneIndex)
-        //{
-        //    Debug.Log($"Creating scene - Set {sceneIndex}");
-        //    var param = new CreateSceneParameters(LocalPhysicsMode.Physics3D);
-        //    var scene = SceneManager.CreateScene($"Set {sceneIndex}", param);
-        //    return scene;
-        //}
     }
 }

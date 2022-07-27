@@ -10,8 +10,6 @@ public class CustomSceneLoader : CustomSceneLoaderBase
 {
     private SceneRef _desiredScene;
 
-    private PhysicsScene physicsScene;
-
     protected override bool IsScenesUpdated()
     {
         if (Runner.SceneManager() && Runner.SceneManager().Object)
@@ -53,15 +51,8 @@ public class CustomSceneLoader : CustomSceneLoaderBase
         op.completed += (operation) =>
         {
             scene = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
-            physicsScene = scene.GetPhysicsScene();
         };
         return scene;
-    }
-
-    public void FixedUpdate()
-    {
-        if (physicsScene != null)
-            physicsScene.Simulate(Time.fixedDeltaTime);
     }
 
 }

@@ -204,6 +204,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1378561952648849243, guid: 05390571b6b6a0f439014db4f99f423b, type: 3}
+      propertyPath: Flags
+      value: 2561
+      objectReference: {fileID: 0}
+    - target: {fileID: 1378561952648849243, guid: 05390571b6b6a0f439014db4f99f423b, type: 3}
+      propertyPath: NetworkedBehaviours.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1378561952648849243, guid: 05390571b6b6a0f439014db4f99f423b, type: 3}
+      propertyPath: NetworkedBehaviours.Array.data[1]
+      value: 
+      objectReference: {fileID: 1311527080}
+    - target: {fileID: 1378561952648849243, guid: 05390571b6b6a0f439014db4f99f423b, type: 3}
+      propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
+      value: -8195693445014728871
+      objectReference: {fileID: 0}
+    - target: {fileID: 1378561952648849243, guid: 05390571b6b6a0f439014db4f99f423b, type: 3}
+      propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
+      value: -730911341696966234
+      objectReference: {fileID: 0}
     - target: {fileID: 3219918335324923810, guid: 05390571b6b6a0f439014db4f99f423b, type: 3}
       propertyPath: m_Name
       value: Cube 2
@@ -292,8 +312,7 @@ MonoBehaviour:
   NetworkGuid:
     RawGuidValue: 44e06c0157c54328aae3e1f0ef5004e2
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 1311527080}
+  NetworkedBehaviours: []
   SimulationBehaviours: []
 --- !u!114 &1311527080
 MonoBehaviour:

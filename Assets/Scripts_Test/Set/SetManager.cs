@@ -20,16 +20,16 @@ namespace Test
         private void Awake()
         {
             _instance = this;
-            CustomSceneLoader.OnSceneLoaded += (value) => SetCurrentScene(value);
+            //CustomSceneLoader.OnSceneLoaded += (value) => SetCurrentScene(value);
         }
 
         [Button]
         public void SetCurrentScene(int value)
         {
             _currentScene = value;
-            var scene = SceneManager.GetSceneByName(CurrentSceneName);
-            SceneManager.SetActiveScene(scene);
-            OnSceneChanged?.Invoke(CurrentSceneName);
+            //var scene = SceneManager.GetSceneByName(CurrentSceneName);
+            //SceneManager.SetActiveScene(scene);
+            //OnSceneChanged?.Invoke(CurrentSceneName);
         }
 
         public void ToggleSet(int value)
