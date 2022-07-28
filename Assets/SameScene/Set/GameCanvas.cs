@@ -1,35 +1,35 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Fusion;
+using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace Test
+namespace SameScene
 {
-    public class GameCanvas : MonoBehaviour
+    public class GameCanvas : SimulationBehaviour
     {
-        public Button[] ButtonsLoad;
-        public Button[] ButtonsCurrent;
+        public Toggle[] Toggles;
 
         public Text GamemodeText;
 
         private void Awake()
         {
-            for (int i = 0; i < ButtonsLoad.Length; i++)
+            for (int i = 0; i < Toggles.Length; i++)
             {
                 var index = i;
-                ButtonsLoad[i].onClick.AddListener(() => SetManager.Instance.ToggleSet(index));
-            }
-
-            for (int i = 0; i < ButtonsCurrent.Length; i++)
-            {
-                var index = i;
-                ButtonsCurrent[i].onClick.AddListener(() => SetManager.Instance.SetCurrentScene(index));
+                Toggles[i].onValueChanged.AddListener((value) => ToggleValueChanged(value, index));
             }
 
             Launcher.OnCurrentGameModeChanged += CurrentGameModeChanged;
+        }
+
+        private void ToggleValueChanged(bool value, int setId)
+        {
+            BasicSpawner.CurrentInput.SetId = setId;
         }
 
         private void CurrentGameModeChanged(GameMode gamemode)

@@ -36,6 +36,7 @@
     "InvokeRenderInBatchMode": true,
     "MaxNetworkedObjectCount": 8192,
     "NetworkIdIsObjectName": false,
+    "HideNetworkObjectInactivityGuard": false,
     "EnableHostMigration": false,
     "HostMigrationSnapshotInterval": 60,
     "Simulation": {

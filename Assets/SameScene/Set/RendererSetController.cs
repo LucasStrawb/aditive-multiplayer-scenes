@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-namespace Test
+namespace SameScene
 {
     public class RendererSetController : MonoBehaviour
     {
@@ -17,16 +14,16 @@ namespace Test
         private AudioSource[] _audioSources;
         private bool[] _audioSourcesValues;
 
-        private string _currentSceneName;
+        private int _set;
 
         private void OnEnable()
         {
-            SetManager.OnSceneChanged += OnSceneChanged;
+            SetManager.OnSetChanged += OnSceneChanged;
         }
 
         private void OnDisable()
         {
-            SetManager.OnSceneChanged -= OnSceneChanged;
+            SetManager.OnSetChanged -= OnSceneChanged;
         }
 
         private void Start()
@@ -40,12 +37,12 @@ namespace Test
             _audioSources = GetComponentsInChildren<AudioSource>();
             _audioSourcesValues = _audioSources.Select(o => o.mute).ToArray();
 
-            _currentSceneName = SetManager.CurrentSceneName;
+            _set = SetManager.CurrentSet;
         }
 
-        private void OnSceneChanged(string sceneName)
+        private void OnSceneChanged(int currentSet)
         {
-            var active = _currentSceneName == sceneName;
+            var active = _set == currentSet;
 
             for (int i = 0; i < _renderers.Length; i++)
                 _renderers[i].renderingLayerMask = active ? _renderersValues[i] : 0;

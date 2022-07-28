@@ -1,21 +1,23 @@
+using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
-namespace Test
+namespace SameScene
 {
     public class Launcher : MonoBehaviour
     {
         public static Action<GameMode> OnCurrentGameModeChanged;
+        public static Action OnInitialized;
 
-        [SerializeField] private NetworkPrefabRef _networkSceneManagerPrefab;
+        [SerializeField] private string _sessionName = "Test";
 
         public static NetworkRunner Runner => _runner;
         private static NetworkRunner _runner;
+
+        [SerializeField] private List<SimulationBehaviour> _simulations = new();
 
         private void Awake()
         {
@@ -28,20 +30,22 @@ namespace Test
             _runner = gameObject.AddComponent<NetworkRunner>();
 
             _runner.ProvideInput = true;
-            Debug.Log("Starting game");
+            Debug.Log("Starting Game");
             _runner.StartGame(new StartGameArgs()
             {
-                SessionName = "Test",
+                SessionName = _sessionName,
                 GameMode = GameMode.AutoHostOrClient,
                 Scene = SceneManager.GetActiveScene().buildIndex,
-                SceneManager = gameObject.AddComponent<CustomSceneLoader>(),
-                Initialized = SpawnNetworkSceneManager,
+                SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>(),
+                Initialized = Initialized,
             });
 
-            void SpawnNetworkSceneManager(NetworkRunner runner)
+            void Initialized(NetworkRunner runner)
             {
-                Debug.Log("On initiliazed");
-                runner.Spawn(_networkSceneManagerPrefab);
+                Debug.Log("Game Initialized");
+                foreach (var simulation in _simulations)
+                    runner.AddSimulationBehaviour(simulation);
+                OnInitialized?.Invoke();
                 OnCurrentGameModeChanged?.Invoke(runner.GameMode);
             }
         }
