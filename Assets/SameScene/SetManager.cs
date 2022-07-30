@@ -8,64 +8,113 @@ namespace SameScene
 {
     public class SetManager : NetworkBehaviour
     {
-        public static int CurrentSet => _currentSet;
+        public static SetManager Instance => _instance;
+        private static SetManager _instance;
+
+        public static int CurrentSetId => _currentSet;
         private static int _currentSet = -1;
 
         public static System.Action<int> OnSetChanged;
 
-        private static Dictionary<int, Set> _loadedSets = new();
+        private static readonly Dictionary<int, Set> _sets = new();
 
         [SerializeField] private Set _setPrefab;
+
+        private void Awake()
+        {
+            _instance = this;
+        }
 
         private void Update()
         {
             if (Runner == null || !Runner.IsRunning || !Object.HasStateAuthority)
                 return;
 
-            var interestedSets = BasicSpawner.Players.SelectMany(o => o.Sets);
+            var interestedSets = BasicSpawner.Players.Select(o => o.FocusSet);
 
             // Load
             foreach (var setId in interestedSets)
             {
-                if (_loadedSets.ContainsKey(setId))
+                if (!_sets.TryGetValue(setId, out var set))
                     continue;
 
-                Debug.Log("Spawning Set " + setId);
-                var set = Runner.Spawn(_setPrefab, new Vector3(setId, 0, 0), Quaternion.identity, Runner.LocalPlayer, (_, no) =>
-                {
-                    no.GetComponent<Set>().SetId = setId;
-                });
+                if (set.Loaded)
+                    continue;
+
+                Debug.Log("Loading Set " + setId);
+                set.Loaded = true;
             }
 
             // Unload
-            var loadedSets = new Dictionary<int, Set>(_loadedSets);
-            foreach (var setId in loadedSets)
+            foreach (var item in _sets)
             {
-                if (interestedSets.Contains(setId.Key))
+                if (interestedSets.Contains(item.Key))
                     continue;
 
-                Debug.Log("Despawning Set " + setId);
-                Runner.Despawn(setId.Value.Object);
+                var set = _sets[item.Key];
+                if (!set.Loaded)
+                    continue;
+
+                Debug.Log("Unloading Set " + item);
+                set.Loaded = false;
             }
+        }
+
+        public override void FixedUpdateNetwork()
+        {
+            if (GetInput(out SetInputData data))
+            {                
+                if (data.CreateSetId > -1) // Create new Sets
+                {
+                    Debug.Log($"CreateSetId {data.FocusSetId}");
+                    SpawnSet(data.CreateSetId);
+                }
+                if (data.DeleteSetId > -1) // Deelete new Sets
+                {
+                    Debug.Log($"DeleteSetId {data.FocusSetId}");
+                    RemoveSet(data.DeleteSetId);
+                }
+            }
+        }
+
+        public void SpawnSet(int setId)
+        {
+            if (_sets.ContainsKey(setId))
+                return;
+
+            Debug.Log("Spawning Set " + setId);
+            var set = Runner.Spawn(_setPrefab, new Vector3(setId * 100, 0, 0), Quaternion.identity, Runner.LocalPlayer, (_, no) =>
+            {
+                no.GetComponent<Set>().SetId = setId;
+            });
+        }
+
+        public void DespawnSet(int setId)
+        {
+            if (!_sets.TryGetValue(setId, out var set))
+                return;
+
+            Debug.Log("Despawning Set " + setId);
+            Runner.Despawn(set.Object);
         }
 
         [Button]
         public void SetCurrentSet(int value)
         {
             _currentSet = value;
-            OnSetChanged?.Invoke(CurrentSet);
+            OnSetChanged?.Invoke(CurrentSetId);
         }
 
-        public static void AddSet(int setId, Set set)
+        internal static void AddSet(int setId, Set set)
         {
-            if (!_loadedSets.ContainsKey(setId))
-                _loadedSets.Add(setId, set);
+            if (!_sets.ContainsKey(setId))
+                _sets.Add(setId, set);
         }
 
         internal static void RemoveSet(int setId)
         {
-            if (_loadedSets.ContainsKey(setId))
-                _loadedSets.Remove(setId);
+            if (_sets.ContainsKey(setId))
+                _sets.Remove(setId);
         }
     }
 }

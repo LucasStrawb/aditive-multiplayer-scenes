@@ -11,7 +11,7 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     private Dictionary<PlayerRef, Player> _spawnedCharacters = new();
     public static List<Player> Players = new();
 
-    public static NetworkInputData CurrentInput;
+    public static SetInputData CurrentInput;
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef playerRef)
     {
@@ -35,11 +35,21 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            CurrentInput.FocusSetId = 0;
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            CurrentInput.FocusSetId = 1;
+    }
+
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
         input.Set(CurrentInput);
-        CurrentInput = default;
-        CurrentInput.SetId = -1;
+        Debug.Log($"{CurrentInput.FocusSetId}\n" +
+            $"{CurrentInput.CreateSetId}\n" +
+            $"{CurrentInput.DeleteSetId}\n");
+        CurrentInput = new SetInputData(-1, -1, -1);
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }

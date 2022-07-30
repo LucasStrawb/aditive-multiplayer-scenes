@@ -1,9 +1,10 @@
+using Fusion;
 using System.Linq;
 using UnityEngine;
 
 namespace SameScene
 {
-    public class RendererSetController : MonoBehaviour
+    public class SetObjectRenderer : MonoBehaviour
     {
         private Renderer[] _renderers;
         private uint[] _renderersValues;
@@ -14,16 +15,18 @@ namespace SameScene
         private AudioSource[] _audioSources;
         private bool[] _audioSourcesValues;
 
-        private int _set;
+        private int _setId;
 
         private void OnEnable()
         {
-            SetManager.OnSetChanged += OnSceneChanged;
+            //SetManager.OnSetChanged += SetChanged;
+            Player.Local.OnSetChanged += SetChanged;
         }
 
         private void OnDisable()
         {
-            SetManager.OnSetChanged -= OnSceneChanged;
+            //SetManager.OnSetChanged -= SetChanged;
+            Player.Local.OnSetChanged -= SetChanged;
         }
 
         private void Start()
@@ -37,12 +40,17 @@ namespace SameScene
             _audioSources = GetComponentsInChildren<AudioSource>();
             _audioSourcesValues = _audioSources.Select(o => o.mute).ToArray();
 
-            _set = SetManager.CurrentSet;
+            SetChanged(Player.Local.FocusSet);
         }
 
-        private void OnSceneChanged(int currentSet)
+        public void SetSetId(int setId)
         {
-            var active = _set == currentSet;
+            _setId = setId;
+        }
+
+        private void SetChanged(int setId)
+        {
+            var active = _setId == setId;
 
             for (int i = 0; i < _renderers.Length; i++)
                 _renderers[i].renderingLayerMask = active ? _renderersValues[i] : 0;

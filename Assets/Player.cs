@@ -1,12 +1,18 @@
 using Fusion;
+using SameScene;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
     public static Player Local;
 
-    [Networked, Capacity(10)]
-    public NetworkLinkedList<int> Sets => default;
+    public Action<int> OnSetChanged;
+
+    [Networked]
+    public int FocusSet { get; set; } = -1;
 
     private void Update()
     {
@@ -19,22 +25,26 @@ public class Player : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput(out NetworkInputData data))
+        if (GetInput(out SetInputData data))
         {
-            if (data.SetId == -1)
-                return;
-
-            if (Sets.Contains(data.SetId))
+            if (data.FocusSetId > -1)
             {
-                Sets.Remove(data.SetId);
-                Debug.Log("Removing set " + data.SetId);
+                FocusSet = data.FocusSetId;
+                OnSetChanged?.Invoke(data.FocusSetId);
+                Debug.Log($"Player {gameObject.name} focus set as {data.FocusSetId}");
             }
-            else
+
+            if (data.CreateSetId > -1) // Create new Sets
             {
-                Sets.Add(data.SetId);
-                Debug.Log("Adding set " + data.SetId);
+                Debug.Log($"CreateSetId {data.FocusSetId}");
+                SetManager.Instance.SpawnSet(data.CreateSetId);
+            }
+
+            if (data.DeleteSetId > -1) // Deelete new Sets
+            {
+                Debug.Log($"DeleteSetId {data.FocusSetId}");
+                SetManager.Instance.DespawnSet(data.DeleteSetId);
             }
         }
     }
-
 }
